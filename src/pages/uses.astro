@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHead from '../components/SectionHead.astro';
+import UsesList from '../components/UsesList.astro';
+import uses from '../data/uses.json';
+---
+
+<BaseLayout title="Uses" description="The bikes, the trainer, the printer and the software.">
+  <main id="main" class="container">
+    <div class="head">
+      <SectionHead title="uses" as="h1">
+        <span class="section-head__meta">{uses.length} entries</span>
+      </SectionHead>
+    </div>
+
+    <UsesList items={uses} />
+  </main>
+</BaseLayout>
+
+<style>
+  .head {
+    padding: 72px 0 0;
+  }
+</style>

@@ -1,0 +1,56 @@
+---
+import SectionHead from './SectionHead.astro';
+import StatCard from './StatCard.astro';
+import telemetry from '../data/telemetry.json';
+
+interface Props {
+  /** Heading text, e.g. "2026 telemetry". */
+  title?: string;
+  as?: 'h1' | 'h2';
+}
+
+const year = new Date(telemetry.generatedAt).getUTCFullYear();
+const { title = `${year} telemetry`, as = 'h2' } = Astro.props;
+
+/**
+ * "synced from Strava · 4h ago" is resolved at build time — there is no client
+ * clock involved, so it reflects when the site was last deployed.
+ */
+function syncedAgo(iso: string): string {
+  const minutes = Math.max(0, Math.round((Date.now() - new Date(iso).valueOf()) / 60_000));
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.round(minutes / 60);
+  if (hours < 48) return `${hours}h ago`;
+  return `${Math.round(hours / 24)}d ago`;
+}
+---
+
+<section class="band">
+  <SectionHead title={title} as={as}>
+    <span class="section-head__meta">synced from Strava · {syncedAgo(telemetry.generatedAt)}</span>
+  </SectionHead>
+
+  <div class="telemetry">
+    {telemetry.cards.map((card) => <StatCard {...card} />)}
+  </div>
+</section>
+
+<style>
+  .telemetry {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+
+  @media (max-width: 1024px) {
+    .telemetry {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 680px) {
+    .telemetry {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,41 @@
+---
+/**
+ * The two fixed full-viewport overlays that sell the CRT: 1px scanlines and a
+ * vignette. Both are pointer-events: none and sit above everything else.
+ */
+---
+
+<div class="scanlines" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+
+<style>
+  .scanlines {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 60;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.035) 0px,
+      rgba(255, 255, 255, 0.035) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    mix-blend-mode: overlay;
+  }
+
+  .vignette {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 61;
+    background: radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.75) 100%);
+  }
+
+  /* Scanlines stay at every size; the vignette gets claustrophobic on a phone. */
+  @media (max-width: 680px) {
+    .vignette {
+      display: none;
+    }
+  }
+</style>

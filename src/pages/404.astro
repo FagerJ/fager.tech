@@ -1,0 +1,114 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import GlitchText from '../components/GlitchText.astro';
+---
+
+<BaseLayout title="404" description="This page is not here.">
+  <main id="main" class="container">
+    <div class="lost">
+      <p class="lost__code">error 404 · route not found</p>
+
+      <GlitchText as="h1" ms={420} steps={4} class="lost__title">
+        Dropped on<br /><span class="lost__accent">the climb</span>
+      </GlitchText>
+
+      <p class="lost__copy">
+        This page either never existed or moved somewhere sensible. Both are things I do
+        regularly. The links below all definitely work.
+      </p>
+
+      <div class="lost__actions">
+        <a class="lost__btn lost__btn--primary" href="/">Home</a>
+        <a class="lost__btn" href="/blog">Read the blog</a>
+        <a class="lost__btn" href="/tags">Browse topics</a>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .lost {
+    max-width: 640px;
+    padding: 120px 0 140px;
+  }
+
+  .lost__code {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--green);
+    border: 1px solid rgba(57, 255, 136, 0.32);
+    padding: 6px 11px;
+    display: inline-block;
+    margin: 0 0 26px;
+  }
+
+  .lost :global(.lost__title) {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 72px;
+    line-height: 0.94;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    margin: 0 0 22px;
+  }
+
+  .lost__accent {
+    color: var(--magenta);
+  }
+
+  .lost__copy {
+    font-size: 18.5px;
+    line-height: 1.6;
+    color: var(--muted);
+    margin: 0 0 34px;
+    text-wrap: pretty;
+  }
+
+  .lost__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .lost__btn {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 13px 20px;
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--rule-button);
+  }
+
+  .lost__btn:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+
+  .lost__btn--primary {
+    color: var(--bg);
+    background: var(--cyan);
+    border-color: var(--cyan);
+    font-weight: 700;
+  }
+
+  .lost__btn--primary:hover {
+    background: var(--magenta);
+    border-color: var(--magenta);
+    color: var(--bg);
+    animation: fgr-split 300ms steps(3) 1;
+  }
+
+  @media (max-width: 680px) {
+    .lost {
+      padding: 72px 0 96px;
+    }
+
+    .lost :global(.lost__title) {
+      font-size: 44px;
+    }
+  }
+</style>

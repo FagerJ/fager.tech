@@ -1,0 +1,69 @@
+---
+import GlitchText from './GlitchText.astro';
+
+interface Props {
+  label: string;
+  value: string;
+  unit: string;
+  delta: string;
+}
+
+const { label, value, unit, delta } = Astro.props;
+---
+
+<div class="stat">
+  <div class="stat__label">{label}</div>
+  <GlitchText as="div" ms={300} steps={3} class="stat__value">
+    {value}<span class="stat__unit">{unit}</span>
+  </GlitchText>
+  <div class="stat__delta">{delta}</div>
+</div>
+
+<style>
+  .stat {
+    position: relative;
+    padding: 22px 20px 20px;
+    background: var(--panel-grad);
+    border: 1px solid var(--rule-card);
+    overflow: hidden;
+  }
+
+  .stat:hover {
+    border-color: rgba(0, 229, 255, 0.55);
+    background: var(--panel-grad-hover);
+  }
+
+  .stat__label {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--label-2);
+    margin-bottom: 12px;
+  }
+
+  /* GlitchText owns this element, so it sits outside this component's scope —
+     see the note in Hero.astro. */
+  .stat :global(.stat__value) {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 40px;
+    line-height: 1;
+    color: var(--text);
+    /* "6 842" is space-grouped; it must never break across lines. */
+    white-space: nowrap;
+  }
+
+  .stat :global(.stat__unit) {
+    font-size: 16px;
+    color: var(--magenta);
+    margin-left: 4px;
+  }
+
+  .stat__delta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--green);
+    margin-top: 10px;
+  }
+</style>

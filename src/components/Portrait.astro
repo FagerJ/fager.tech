@@ -1,0 +1,99 @@
+---
+import { Picture } from 'astro:assets';
+import portrait from '../assets/jonathan.jpg';
+
+/**
+ * Framed portrait: cyan hairline frame, magenta corner brackets, tear-on-hover,
+ * and the scan sweep — the only always-on motion anywhere on the site.
+ */
+---
+
+<div class="portrait">
+  <div class="portrait__frame" aria-hidden="true"></div>
+  <div class="portrait__bracket portrait__bracket--tl" aria-hidden="true"></div>
+  <div class="portrait__bracket portrait__bracket--br" aria-hidden="true"></div>
+
+  <div class="portrait__window">
+    <Picture
+      src={portrait}
+      formats={['avif', 'webp']}
+      fallbackFormat="jpg"
+      widths={[420, 640, 900]}
+      sizes="(max-width: 1024px) min(420px, 90vw), 40vw"
+      alt="Jonathan Fager, crouched, in a green tracksuit — the photo run through a chromatic-split glitch filter"
+      loading="eager"
+      fetchpriority="high"
+      class="portrait__img"
+    />
+    <div class="portrait__sweep" aria-hidden="true"></div>
+  </div>
+</div>
+
+<style>
+  .portrait {
+    position: relative;
+  }
+
+  .portrait__frame {
+    position: absolute;
+    inset: -14px;
+    border: 1px solid var(--rule-portrait);
+  }
+
+  .portrait__bracket {
+    position: absolute;
+    width: 26px;
+    height: 26px;
+  }
+
+  .portrait__bracket--tl {
+    top: -14px;
+    left: -14px;
+    border-top: 2px solid var(--magenta);
+    border-left: 2px solid var(--magenta);
+  }
+
+  .portrait__bracket--br {
+    bottom: -14px;
+    right: -14px;
+    border-bottom: 2px solid var(--magenta);
+    border-right: 2px solid var(--magenta);
+  }
+
+  .portrait__window {
+    position: relative;
+    overflow: hidden;
+    background: #000;
+  }
+
+  .portrait__window:hover {
+    outline: 1px solid rgba(255, 43, 209, 0.4);
+  }
+
+  .portrait__img {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter: contrast(1.05) saturate(1.1);
+  }
+
+  .portrait__window:hover .portrait__img {
+    animation: fgr-tear 520ms steps(2) 1;
+  }
+
+  .portrait__sweep {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 22%;
+    background: linear-gradient(
+      rgba(0, 229, 255, 0),
+      rgba(0, 229, 255, 0.14),
+      rgba(255, 43, 209, 0.1),
+      rgba(0, 229, 255, 0)
+    );
+    mix-blend-mode: screen;
+    animation: fgr-sweep 7s linear infinite;
+  }
+</style>

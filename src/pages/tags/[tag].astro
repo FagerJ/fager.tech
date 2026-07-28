@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import PostRow from '../../components/PostRow.astro';
+import { getAllWriting, collectTopics, type WritingEntry } from '../../lib/content';
+import { tagSlug } from '../../lib/tags';
+
+export async function getStaticPaths() {
+  const writing = await getAllWriting();
+
+  return collectTopics(writing).map((topic) => ({
+    params: { tag: topic.slug },
+    props: {
+      tag: topic.tag,
+      entries: writing.filter((entry) => entry.data.tags.some((t) => tagSlug(t) === topic.slug)),
+    },
+  }));
+}
+
+interface Props {
+  tag: string;
+  entries: WritingEntry[];
+}
+
+const { tag, entries } = Astro.props;
+---
+
+<BaseLayout title={tag} description={`Everything written here about ${tag}.`}>
+  <main id="main" class="container">
+    <div class="head">
+      <a class="crumb" href="/tags">← all topics</a>
+      <SectionHead title={tag} as="h1">
+        <span class="section-head__meta">
+          {entries.length}
+          {entries.length === 1 ? 'post' : 'posts'}
+        </span>
+      </SectionHead>
+    </div>
+
+    <div class="list">
+      {entries.map((entry) => <PostRow entry={entry} />)}
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .head {
+    padding: 56px 0 0;
+  }
+
+  .crumb {
+    display: inline-block;
+    margin-bottom: 26px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--meta);
+  }
+
+  .crumb:hover {
+    color: var(--magenta);
+  }
+
+  .list {
+    max-width: 860px;
+  }
+</style>

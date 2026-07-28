@@ -1,0 +1,48 @@
+---
+import { LINKS } from '../consts';
+---
+
+<footer class="footer">
+  <div class="footer__inner">
+    <span>fager.tech — built with Astro, hosted on Vercel</span>
+    <span class="footer__links">
+      <a href={LINKS.strava} target="_blank" rel="me noopener noreferrer">Strava</a>
+      <a href={LINKS.instagram} target="_blank" rel="me noopener noreferrer">Instagram</a>
+      <a href={LINKS.rss}>RSS</a>
+    </span>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-top: 1px solid var(--rule-card);
+    padding: 34px var(--gutter) 46px;
+    background: rgba(0, 0, 0, 0.4);
+  }
+
+  .footer__inner {
+    max-width: var(--container);
+    margin: 0 auto;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 24px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--meta-dim);
+  }
+
+  .footer__links {
+    display: flex;
+    gap: 18px;
+  }
+
+  @media (max-width: 680px) {
+    .footer__inner {
+      flex-direction: column;
+      gap: 16px;
+    }
+  }
+</style>

@@ -1,0 +1,321 @@
+/* ==========================================================================
+   fager.tech — global tokens, reset, keyframes
+   Design values come from the handoff README. Never inline a literal hex in a
+   component; reference the custom properties below.
+   ========================================================================== */
+
+:root {
+  /* --- surfaces --- */
+  --bg: #050508;
+  --panel: rgba(255, 255, 255, 0.028);
+  --panel-grad: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015));
+  --panel-grad-hover: linear-gradient(180deg, rgba(0, 229, 255, 0.09), rgba(255, 43, 209, 0.05));
+
+  /* --- text --- */
+  --text: #e8e8f0;
+  --text-strong: #f2f2f8;
+  --body: #cfcfdd;
+  --body-dim: #dcdce8;
+  --muted: #b9b9cc;
+  --muted-2: #9a9ab2;
+  --label: #8b8ba3;
+  --label-2: #7b7b95;
+  --meta: #6f6f88;
+  --meta-dim: #5c5c74;
+  --rule-dim: #2e2e3d;
+
+  /* --- accents --- */
+  --magenta: #ff2bd1;
+  --cyan: #00e5ff;
+  --green: #39ff88;
+
+  /* --- borders & rules --- */
+  --rule-card: rgba(255, 255, 255, 0.09);
+  --rule-section: rgba(255, 255, 255, 0.1);
+  --rule-row: rgba(255, 255, 255, 0.07);
+  --rule-row-tight: rgba(255, 255, 255, 0.06);
+  --rule-dashed: rgba(255, 255, 255, 0.11);
+  --rule-header: rgba(0, 229, 255, 0.22);
+  --rule-portrait: rgba(0, 229, 255, 0.28);
+  --rule-chip: rgba(255, 43, 209, 0.32);
+  --rule-soft: rgba(255, 255, 255, 0.14);
+  --rule-button: rgba(255, 255, 255, 0.16);
+
+  /* --- type ---
+     --font-display / --font-body / --font-mono are defined by Astro's font
+     pipeline (see `fonts` in astro.config.mjs), which emits the @font-face
+     rules and the matching fallback stacks. Do not redeclare them here. */
+
+  /* --- layout --- */
+  --container: 1180px;
+  --gutter: 40px;
+}
+
+/* --------------------------------------------------------------------------
+   Reset
+   -------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Border radius is 0 everywhere on this site. There is no radius scale. */
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: var(--cyan);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--magenta);
+}
+
+::selection {
+  background: var(--magenta);
+  color: var(--bg);
+}
+
+/* The prototype omits focus styling; it is required. Never remove this. */
+:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   Layout primitives
+   -------------------------------------------------------------------------- */
+
+.container {
+  /* width:100% is load-bearing: the shell is a column flexbox, and auto side
+     margins on a flex item suppress the default stretch, which would otherwise
+     shrink narrow pages (e.g. an article) to their content width. */
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--gutter) 120px;
+}
+
+/* Section rhythm: every homepage band except the last carries this. */
+.band {
+  margin-bottom: 96px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip link — visible only once focused. */
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  transform: translateY(-120%);
+  padding: 11px 16px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--cyan);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+  color: var(--bg);
+}
+
+/* --------------------------------------------------------------------------
+   Glitch keyframes — copied verbatim from the handoff. The steps() timing is
+   what makes these read as digital tearing rather than a smooth blur.
+   Do not replace with ease.
+   -------------------------------------------------------------------------- */
+
+@keyframes fgr-split {
+  0% {
+    text-shadow: 0 0 0 transparent;
+    transform: translate(0, 0);
+  }
+  20% {
+    text-shadow: -3px 0 0 #ff2bd1, 3px 0 0 #00e5ff;
+    transform: translate(1px, -1px);
+  }
+  40% {
+    text-shadow: 2px 0 0 #ff2bd1, -2px 0 0 #39ff88;
+    transform: translate(-1px, 1px);
+  }
+  60% {
+    text-shadow: -2px 0 0 #00e5ff, 2px 0 0 #ff2bd1;
+    transform: translate(1px, 0);
+  }
+  100% {
+    text-shadow: -1px 0 0 #ff2bd1, 1px 0 0 #00e5ff;
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes fgr-tear {
+  0% {
+    clip-path: inset(0 0 0 0);
+    transform: translateX(0);
+  }
+  15% {
+    clip-path: inset(12% 0 74% 0);
+    transform: translateX(-6px);
+  }
+  30% {
+    clip-path: inset(0 0 0 0);
+    transform: translateX(0);
+  }
+  45% {
+    clip-path: inset(58% 0 30% 0);
+    transform: translateX(7px);
+  }
+  60% {
+    clip-path: inset(0 0 0 0);
+    transform: translateX(0);
+  }
+  75% {
+    clip-path: inset(80% 0 8% 0);
+    transform: translateX(-4px);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+    transform: translateX(0);
+  }
+}
+
+@keyframes fgr-sweep {
+  0% {
+    transform: translateY(-120%);
+  }
+  100% {
+    transform: translateY(320%);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Shared chrome patterns
+   -------------------------------------------------------------------------- */
+
+/* "// section title" — mono, cyan, wide tracking, rule underneath. */
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--rule-section);
+  padding-bottom: 12px;
+  margin: 0 0 22px;
+}
+
+.section-head__title {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin: 0;
+}
+
+.section-head__meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--meta-dim);
+}
+
+.section-head__link {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--label-2);
+  white-space: nowrap;
+}
+
+.section-head__link:hover {
+  color: var(--magenta);
+}
+
+/* Magenta outline tag chip, used on post rows and article headers. */
+.tag-chip {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--magenta);
+  border: 1px solid var(--rule-chip);
+  padding: 3px 8px;
+  white-space: nowrap;
+}
+
+a.tag-chip:hover {
+  color: var(--bg);
+  background: var(--magenta);
+  border-color: var(--magenta);
+}
+
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion — required. Kills the sweep, the glitches and smooth scroll.
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 680px) {
+  :root {
+    --gutter: 20px;
+  }
+}

@@ -1,0 +1,31 @@
+---
+import { render } from 'astro:content';
+import PostLayout from '../../layouts/PostLayout.astro';
+import { getAllWriting, readingTime, type WritingEntry } from '../../lib/content';
+
+/**
+ * One route for blog, recipes and guides — they share a layout and differ only
+ * in the frontmatter block rendered above the body. "Next post" walks the
+ * merged, newest-first list so it crosses collection boundaries naturally.
+ */
+export async function getStaticPaths() {
+  const writing = await getAllWriting();
+
+  return writing.map((entry, index) => ({
+    params: { collection: entry.collection, slug: entry.id },
+    props: { entry, next: writing[index + 1] },
+  }));
+}
+
+interface Props {
+  entry: WritingEntry;
+  next?: WritingEntry;
+}
+
+const { entry, next } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<PostLayout entry={entry} next={next} readTime={readingTime(entry.body)}>
+  <Content />
+</PostLayout>

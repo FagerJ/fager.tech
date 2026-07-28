@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://fager.tech/sitemap-index.xml

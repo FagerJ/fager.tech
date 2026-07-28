@@ -1,0 +1,118 @@
+---
+import { Font } from 'astro:assets';
+import CrtOverlay from '../components/CrtOverlay.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { SITE, LINKS } from '../consts';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Absolute or root-relative OG image. Falls back to the site card. */
+  image?: string;
+  /** Emitted as <script type="application/ld+json">. */
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  /** Suppress the "Jonathan Fager — fager.tech" suffix (used on the homepage). */
+  bareTitle?: boolean;
+}
+
+const {
+  title,
+  description = SITE.description,
+  image = '/og/default.png',
+  jsonLd,
+  bareTitle = false,
+} = Astro.props;
+
+const pageTitle = !title ? SITE.title : bareTitle ? title : `${title} — ${SITE.shortTitle}`;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? SITE.url);
+const ogImage = new URL(image, Astro.site ?? SITE.url);
+---
+
+<!doctype html>
+<html lang={SITE.locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.shortTitle} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <meta name="theme-color" content="#050508" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${SITE.shortTitle} — writing`}
+      href={new URL(LINKS.rss, Astro.site ?? SITE.url)}
+    />
+
+    {/* Only the two faces that are above the fold on every route get preloaded:
+        Chakra Petch 700 (wordmark, hero/article H1) and JetBrains Mono (all
+        chrome). Chakra 400/600 are article- and card-level and can load late. */}
+    <Font cssVariable="--font-display" preload={[{ weight: 700 }]} />
+    <Font cssVariable="--font-mono" preload />
+    <Font cssVariable="--font-body" />
+
+    {
+      jsonLd && (
+        <script
+          type="application/ld+json"
+          is:inline
+          set:html={JSON.stringify(Array.isArray(jsonLd) ? jsonLd : [jsonLd])}
+        />
+      )
+    }
+
+    <slot name="head" />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <div class="shell">
+      <CrtOverlay />
+      <SiteHeader />
+      <slot />
+      <SiteFooter />
+    </div>
+  </body>
+</html>
+
+<style>
+  /* Two soft radial glows over near-black. These are the palette anchor —
+     the magenta bloom top-right, cyan top-left. */
+  .shell {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background:
+      radial-gradient(1100px 620px at 78% -10%, rgba(255, 43, 209, 0.16), transparent 62%),
+      radial-gradient(900px 520px at 8% 8%, rgba(0, 229, 255, 0.13), transparent 60%),
+      linear-gradient(var(--bg), var(--bg));
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* Pin the footer to the bottom on short pages (404, empty tag indexes). */
+  .shell > :global(main) {
+    flex: 1 0 auto;
+  }
+</style>

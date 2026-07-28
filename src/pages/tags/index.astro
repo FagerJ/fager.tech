@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import { getAllWriting, collectTopics } from '../../lib/content';
+import { tagPath } from '../../lib/tags';
+
+const topics = collectTopics(await getAllWriting());
+---
+
+<BaseLayout title="Topics" description="Everything written here, indexed by topic.">
+  <main id="main" class="container">
+    <div class="head">
+      <SectionHead title="topics" as="h1">
+        <span class="section-head__meta">{topics.length} topics</span>
+      </SectionHead>
+    </div>
+
+    <ul class="list">
+      {
+        topics.map((topic) => (
+          <li>
+            <a class="row" href={tagPath(topic.tag)}>
+              <span class="row__tag">{topic.tag}</span>
+              <span class="row__count">
+                {topic.count} {topic.count === 1 ? 'post' : 'posts'}
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </main>
+</BaseLayout>
+
+<style>
+  .head {
+    padding: 72px 0 0;
+  }
+
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-width: 720px;
+  }
+
+  .row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 16px 6px;
+    border-bottom: 1px solid var(--rule-row);
+    color: var(--text);
+  }
+
+  .row:hover {
+    background: rgba(0, 229, 255, 0.05);
+    color: var(--text);
+  }
+
+  .row__tag {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 22px;
+    line-height: 1.2;
+  }
+
+  .row:hover .row__tag {
+    color: var(--cyan);
+  }
+
+  .row__count {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--meta-dim);
+  }
+</style>

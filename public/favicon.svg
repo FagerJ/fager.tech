@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <rect width="32" height="32" fill="#050508"/>
+  <!-- RGB-split "F": magenta and cyan ghosts offset either side of a near-white
+       glyph — the same three-channel tear the site runs on hover. Drawn as
+       geometry, not text, because SVG favicons do not load webfonts. -->
+  <defs>
+    <g id="f">
+      <rect x="10" y="6" width="4" height="20"/>
+      <rect x="10" y="6" width="13" height="4"/>
+      <rect x="10" y="14" width="10" height="4"/>
+    </g>
+  </defs>
+  <use href="#f" x="-2.5" fill="#ff2bd1"/>
+  <use href="#f" x="2.5" fill="#00e5ff"/>
+  <use href="#f" fill="#e8e8f0"/>
+</svg>

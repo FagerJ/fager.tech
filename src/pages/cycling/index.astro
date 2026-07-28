@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TelemetryGrid from '../../components/TelemetryGrid.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import ResultRow from '../../components/ResultRow.astro';
+import PostRow from '../../components/PostRow.astro';
+import { getAllWriting } from '../../lib/content';
+import { tagSlug } from '../../lib/tags';
+import results from '../../data/results.json';
+
+/** The season page: full telemetry, the whole results sheet, and everything
+ *  written about riding. */
+const CYCLING_TAGS = new Set(['cycling', 'ecycling', 'racing', 'training']);
+
+const writing = await getAllWriting();
+const rides = writing.filter((entry) => entry.data.tags.some((t) => CYCLING_TAGS.has(tagSlug(t))));
+
+const sorted = [...results].sort((a, b) => b.date.localeCompare(a.date));
+---
+
+<BaseLayout
+  title="Cycling"
+  description="Season telemetry, race results and everything written about riding."
+>
+  <main id="main" class="container">
+    <div class="head">
+      <TelemetryGrid title="2026 telemetry" as="h1" />
+    </div>
+
+    <section class="band">
+      <SectionHead title="results">
+        <span class="section-head__meta">{sorted.length} entries</span>
+      </SectionHead>
+      <div class="results">
+        {sorted.map((result) => <ResultRow {...result} />)}
+      </div>
+    </section>
+
+    <section>
+      <SectionHead title="writing" />
+      {rides.map((entry) => <PostRow entry={entry} />)}
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .head {
+    padding: 72px 0 0;
+  }
+
+  .results {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0 44px;
+  }
+
+  @media (max-width: 680px) {
+    .results {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

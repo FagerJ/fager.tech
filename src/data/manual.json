@@ -1,0 +1,5 @@
+{
+  "_comment": "Values the Strava API does not expose. Edit by hand; the sync script reads them.",
+  "ftp": 268,
+  "ftpDelta": "+19 W since March"
+}

@@ -1,0 +1,19 @@
+---
+/**
+ * The "// title" rule that opens every band. Optional right-hand slot holds
+ * either a link ("All posts →") or dim meta ("synced from Strava · 4h ago").
+ */
+interface Props {
+  title: string;
+  /** Heading level — h1 on section index pages, h2 on the homepage. */
+  as?: 'h1' | 'h2';
+  class?: string;
+}
+
+const { title, as: Tag = 'h2', class: className } = Astro.props;
+---
+
+<div class:list={['section-head', className]}>
+  <Tag class="section-head__title">// {title}</Tag>
+  <slot />
+</div>

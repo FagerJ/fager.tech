@@ -1,0 +1,96 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import PostRow from '../../components/PostRow.astro';
+import { getAllWriting, collectTopics } from '../../lib/content';
+import { tagPath } from '../../lib/tags';
+
+/**
+ * The writing index covers blog, recipes and guides — they are all posts, the
+ * nav has one entry for them, and the tag index is the cross-cutting filter.
+ */
+const posts = await getAllWriting();
+const topics = collectTopics(posts);
+---
+
+<BaseLayout
+  title="Blog"
+  description="Training notes, race reports, ride food and the occasional build log."
+>
+  <main id="main" class="container">
+    <div class="head">
+      <SectionHead title="writing" as="h1">
+        <span class="section-head__meta">{posts.length} posts</span>
+      </SectionHead>
+    </div>
+
+    <div class="layout">
+      <div>
+        {posts.map((entry) => <PostRow entry={entry} />)}
+      </div>
+
+      <aside>
+        <SectionHead title="topics" />
+        <div class="topics">
+          {
+            topics.map((topic) => (
+              <a class="topic" href={tagPath(topic.tag)}>
+                {topic.tag} <span class="topic__count">{topic.count}</span>
+              </a>
+            ))
+          }
+        </div>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .head {
+    padding: 72px 0 0;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 44px;
+    align-items: start;
+  }
+
+  .topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .topic {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted-2);
+    border: 1px solid var(--rule-soft);
+    padding: 6px 10px;
+  }
+
+  .topic__count {
+    color: var(--meta-dim);
+  }
+
+  .topic:hover {
+    color: var(--bg);
+    background: var(--green);
+    border-color: var(--green);
+  }
+
+  .topic:hover .topic__count {
+    color: var(--bg);
+  }
+
+  @media (max-width: 1024px) {
+    .layout {
+      grid-template-columns: 1fr;
+      gap: 56px;
+    }
+  }
+</style>

@@ -1,0 +1,185 @@
+---
+import GlitchText from './GlitchText.astro';
+import Portrait from './Portrait.astro';
+import links from '../data/links.json';
+import { SITE } from '../consts';
+---
+
+<section class="hero">
+  <div class="hero__copy">
+    <p class="status">
+      <span class="status__dot" aria-hidden="true"></span>Online · {SITE.location}
+    </p>
+
+    <GlitchText as="h1" ms={420} steps={4} class="hero__title">
+      Jonathan<br /><span class="hero__title-accent">Fager</span>
+    </GlitchText>
+
+    <p class="hero__tagline">Setting PRs my son is going to have a rough time beating.</p>
+    <p class="hero__sub">&gt; racing to not be last in '26</p>
+
+    <div class="hero__actions">
+      {
+        links.map((link) => (
+          <a
+            class:list={['btn', `btn--${link.variant}`]}
+            href={link.href}
+            {...link.external ? { target: '_blank', rel: 'me noopener noreferrer' } : {}}
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="hero__portrait">
+    <Portrait />
+  </div>
+</section>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 56px;
+    align-items: center;
+    padding: 84px 0 72px;
+  }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--green);
+    border: 1px solid rgba(57, 255, 136, 0.32);
+    padding: 6px 11px;
+    margin: 0 0 26px;
+  }
+
+  .status__dot {
+    width: 6px;
+    height: 6px;
+    flex-shrink: 0;
+    background: var(--green);
+    box-shadow: 0 0 10px var(--green);
+  }
+
+  /* GlitchText renders the <h1>, so it never picks up this component's scope
+     attribute. Scoping the ancestor and globalising only the descendant keeps
+     the rule contained to this component while still matching. Same pattern
+     wherever a child component owns an element the parent styles. */
+  .hero :global(.hero__title) {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 82px;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    margin: 0 0 22px;
+    text-transform: uppercase;
+  }
+
+  /* Slotted content is authored in this template, so it keeps this scope. */
+  .hero__title-accent {
+    color: var(--magenta);
+  }
+
+  .hero__tagline {
+    font-family: var(--font-body);
+    font-size: 21px;
+    line-height: 1.5;
+    color: var(--muted);
+    max-width: 30ch;
+    margin: 0 0 14px;
+    text-wrap: pretty;
+  }
+
+  .hero__sub {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    color: var(--meta);
+    margin: 0 0 34px;
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 13px 20px;
+    white-space: nowrap;
+  }
+
+  .btn--primary {
+    color: var(--bg);
+    background: var(--cyan);
+    font-weight: 700;
+  }
+
+  .btn--primary:hover {
+    background: var(--magenta);
+    color: var(--bg);
+    animation: fgr-split 300ms steps(3) 1;
+  }
+
+  .btn--magenta,
+  .btn--cyan {
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--rule-button);
+  }
+
+  .btn--magenta:hover {
+    border-color: var(--magenta);
+    color: var(--magenta);
+  }
+
+  .btn--cyan:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+
+  @media (max-width: 1024px) {
+    .hero {
+      grid-template-columns: 1fr;
+      gap: 44px;
+      padding: 56px 0 64px;
+    }
+
+    /* Portrait leads on narrow layouts. */
+    .hero__portrait {
+      order: -1;
+      max-width: 420px;
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 680px) {
+    .hero :global(.hero__title) {
+      font-size: 48px;
+    }
+
+    .hero__tagline {
+      font-size: 19px;
+    }
+
+    .btn {
+      flex: 1 1 auto;
+      justify-content: center;
+    }
+  }
+</style>

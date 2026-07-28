@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { getCollection } from 'astro:content';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout title="Projects" description="Things being built: workshop prints, tooling and data.">
+  <main id="main" class="container">
+    <div class="head">
+      <SectionHead title="projects" as="h1">
+        <span class="section-head__meta">{projects.length} entries</span>
+      </SectionHead>
+    </div>
+
+    <div class="grid">
+      {projects.map((project) => <ProjectCard project={project} />)}
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .head {
+    padding: 72px 0 0;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  @media (max-width: 1024px) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 680px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

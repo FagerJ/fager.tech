@@ -1,0 +1,21 @@
+---
+import { tagPath } from '../lib/tags';
+
+interface Props {
+  tag: string;
+  /** Render as a link to the tag index. Post-list chips are decorative. */
+  link?: boolean;
+}
+
+const { tag, link = false } = Astro.props;
+---
+
+{
+  link ? (
+    <a class="tag-chip" href={tagPath(tag)}>
+      {tag}
+    </a>
+  ) : (
+    <span class="tag-chip">{tag}</span>
+  )
+}

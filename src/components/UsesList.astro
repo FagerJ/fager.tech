@@ -1,0 +1,68 @@
+---
+interface Props {
+  items: { slot: string; item: string }[];
+}
+
+const { items } = Astro.props;
+---
+
+{/* gap: 0 40px so the three columns read as parallel definition lists, not cards. */}
+<dl class="uses">
+  {
+    items.map(({ slot, item }) => (
+      <div class="uses__row">
+        <dt class="uses__slot">{slot}</dt>
+        <dd class="uses__item">{item}</dd>
+      </div>
+    ))
+  }
+</dl>
+
+<style>
+  .uses {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0 40px;
+    margin: 0;
+  }
+
+  .uses__row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: baseline;
+    padding: 14px 0;
+    border-bottom: 1px dashed var(--rule-dashed);
+  }
+
+  .uses__row:hover {
+    border-bottom-color: var(--cyan);
+  }
+
+  .uses__slot {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--meta);
+  }
+
+  .uses__item {
+    font-size: 14.5px;
+    color: var(--body-dim);
+    text-align: right;
+    margin: 0;
+  }
+
+  @media (max-width: 1024px) {
+    .uses {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 680px) {
+    .uses {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

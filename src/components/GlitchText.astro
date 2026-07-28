@@ -1,0 +1,28 @@
+---
+/**
+ * Runs the RGB-split glitch on hover. The steps() timing is deliberate — it is
+ * what makes the effect read as digital tearing rather than a smooth blur.
+ *
+ * Per the handoff, glitch is never the sole indicator of an interactive state:
+ * every element that glitches also changes colour or background.
+ */
+interface Props {
+  as?: keyof HTMLElementTagNameMap;
+  /** Animation duration in ms. Wordmark 340, hero h1 420, article h1 380, stat value 300. */
+  ms?: number;
+  steps?: number;
+  class?: string;
+}
+
+const { as: Tag = 'span', ms = 340, steps = 3, class: className } = Astro.props;
+---
+
+<Tag class:list={['glitch', className]} style={`--glitch-ms:${ms}ms;--glitch-steps:${steps};`}>
+  <slot />
+</Tag>
+
+<style>
+  .glitch:hover {
+    animation: fgr-split var(--glitch-ms) steps(var(--glitch-steps)) 1;
+  }
+</style>

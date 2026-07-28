@@ -1,0 +1,127 @@
+---
+import GlitchText from './GlitchText.astro';
+import { NAV, LINKS } from '../consts';
+
+/**
+ * Sticky header. On narrow viewports the nav becomes a horizontally scrollable
+ * mono row rather than a hamburger — it keeps the terminal feel and, more
+ * usefully, keeps the site at zero client-side JavaScript.
+ */
+const path = Astro.url.pathname;
+const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+
+<header class="header">
+  <a class="wordmark" href="/">
+    <GlitchText ms={340} steps={3}>FAGER<span class="wordmark__tld">.TECH</span></GlitchText>
+  </a>
+
+  <nav class="nav" aria-label="Primary">
+    {
+      NAV.map((item) => (
+        <a class="nav__link" href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+          {item.label}
+        </a>
+      ))
+    }
+    <a class="nav__cta" href={LINKS.strava} target="_blank" rel="me noopener noreferrer">Strava ↗</a>
+  </nav>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 16px var(--gutter);
+    background: rgba(5, 5, 8, 0.82);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--rule-header);
+  }
+
+  .wordmark {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    font-size: 19px;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+
+  .wordmark:hover {
+    color: var(--text);
+  }
+
+  .wordmark__tld {
+    color: var(--magenta);
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .nav__link {
+    padding: 9px 13px;
+    color: var(--label);
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+
+  /* Hard swap, no transition — it should read as a terminal, not a web page.
+     The current page carries aria-current for assistive tech but no visual
+     state: the design has exactly one nav treatment and a permanently filled
+     item would compete with the Strava CTA. */
+  .nav__link:hover {
+    color: var(--bg);
+    background: var(--cyan);
+    border-color: var(--cyan);
+  }
+
+  .nav__cta {
+    margin-left: 10px;
+    padding: 9px 15px;
+    color: var(--magenta);
+    border: 1px solid rgba(255, 43, 209, 0.5);
+    box-shadow: inset 0 0 22px rgba(255, 43, 209, 0.14);
+    white-space: nowrap;
+  }
+
+  .nav__cta:hover {
+    background: var(--magenta);
+    color: var(--bg);
+    border-color: var(--magenta);
+  }
+
+  @media (max-width: 860px) {
+    .header {
+      gap: 16px;
+    }
+
+    /* Scrollable mono row. The negative margin lets the row bleed to the screen
+       edge so it is visually obvious there is more to scroll to. */
+    .nav {
+      overflow-x: auto;
+      scrollbar-width: none;
+      margin-right: calc(var(--gutter) * -1);
+      padding-right: var(--gutter);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .nav::-webkit-scrollbar {
+      display: none;
+    }
+  }
+</style>

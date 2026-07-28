@@ -1,0 +1,10 @@
+{
+  "generatedAt": "2026-07-28T17:00:00.000Z",
+  "source": "fallback",
+  "cards": [
+    { "label": "Distance 2026", "value": "6 842", "unit": "km", "delta": "+18% vs 2025" },
+    { "label": "Time in saddle", "value": "241", "unit": "h", "delta": "+34 h vs 2025" },
+    { "label": "Elevation", "value": "58.4", "unit": "k m", "delta": "best year yet" },
+    { "label": "FTP", "value": "268", "unit": "W", "delta": "+19 W since March" }
+  ]
+}

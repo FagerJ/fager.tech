@@ -1,0 +1,5 @@
+[
+  { "label": "Strava", "href": "https://www.strava.com/athletes/5854987", "variant": "primary", "external": true },
+  { "label": "Instagram", "href": "https://www.instagram.com/faaager/", "variant": "magenta", "external": true },
+  { "label": "Read the blog", "href": "/blog", "variant": "cyan", "external": false }
+]

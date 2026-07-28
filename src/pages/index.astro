@@ -1,0 +1,148 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import TelemetryGrid from '../components/TelemetryGrid.astro';
+import SectionHead from '../components/SectionHead.astro';
+import PostRow from '../components/PostRow.astro';
+import ResultRow from '../components/ResultRow.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import UsesList from '../components/UsesList.astro';
+import { getCollection } from 'astro:content';
+import { getAllWriting, collectTopics } from '../lib/content';
+import { tagPath } from '../lib/tags';
+import { SITE, LINKS } from '../consts';
+import results from '../data/results.json';
+import uses from '../data/uses.json';
+
+const writing = await getAllWriting();
+const posts = writing.slice(0, 4);
+const topics = collectTopics(writing);
+const projects = (await getCollection('projects'))
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: SITE.author,
+  url: SITE.url,
+  description: SITE.description,
+  address: { '@type': 'PostalAddress', addressLocality: 'Sundbyberg', addressCountry: 'SE' },
+  sameAs: [LINKS.strava, LINKS.instagram],
+};
+---
+
+<BaseLayout jsonLd={jsonLd}>
+  <main id="main" class="container">
+    <Hero />
+
+    <TelemetryGrid />
+
+    <section class="band split">
+      <div>
+        <SectionHead title="latest writing" class="split__head">
+          <a class="section-head__link" href="/blog">All posts →</a>
+        </SectionHead>
+        {posts.map((entry) => <PostRow entry={entry} />)}
+      </div>
+
+      <div class="split__aside">
+        <div>
+          <SectionHead title="results" class="split__head" />
+          {results.slice(0, 4).map((result) => <ResultRow {...result} />)}
+        </div>
+
+        <div>
+          <SectionHead title="topics" class="split__head" />
+          <div class="topics">
+            {
+              topics.map((topic) => (
+                <a class="topic" href={tagPath(topic.tag)}>
+                  {topic.tag}
+                </a>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band">
+      <SectionHead title="projects" />
+      <div class="projects">
+        {projects.map((project) => <ProjectCard project={project} />)}
+      </div>
+    </section>
+
+    <section>
+      <SectionHead title="uses" />
+      <UsesList items={uses.slice(0, 9)} />
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .split {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 44px;
+  }
+
+  /* The rows below these heads carry their own top border, so the head sits
+     tighter to them than the standard 22px. */
+  .split :global(.split__head) {
+    margin-bottom: 6px;
+  }
+
+  .split__aside {
+    display: flex;
+    flex-direction: column;
+    gap: 34px;
+  }
+
+  .topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 16px;
+  }
+
+  .topic {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted-2);
+    border: 1px solid var(--rule-soft);
+    padding: 6px 10px;
+  }
+
+  .topic:hover {
+    color: var(--bg);
+    background: var(--green);
+    border-color: var(--green);
+  }
+
+  .projects {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  @media (max-width: 1024px) {
+    .split {
+      grid-template-columns: 1fr;
+      gap: 56px;
+    }
+
+    .projects {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 680px) {
+    .projects {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,8 @@
+{
+  "_comment": "Year-end ride totals, used to compute the deltas on the telemetry cards. The sync script appends the current year as it goes.",
+  "2025": {
+    "distanceKm": 5800,
+    "movingHours": 207,
+    "elevationM": 51200
+  }
+}

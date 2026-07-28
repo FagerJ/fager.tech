@@ -1,0 +1,11 @@
+[
+  { "slot": "Race bike", "item": "Canyon Ultimate CF SLX" },
+  { "slot": "Trainer", "item": "Wahoo Kickr V6" },
+  { "slot": "Power", "item": "Favero Assioma Duo" },
+  { "slot": "Head unit", "item": "Garmin Edge 840" },
+  { "slot": "Indoor", "item": "Zwift + MyWhoosh" },
+  { "slot": "Printer", "item": "Bambu Lab P1S + AMS" },
+  { "slot": "Editor", "item": "VS Code + Neovim" },
+  { "slot": "Stack", "item": "Astro · Vercel · Cloudflare DNS" },
+  { "slot": "Analysis", "item": "Intervals.icu" }
+]

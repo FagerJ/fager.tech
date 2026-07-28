@@ -1,0 +1,86 @@
+---
+import TagChip from './TagChip.astro';
+import { entryPath, formatDate, type WritingEntry } from '../lib/content';
+
+interface Props {
+  entry: WritingEntry;
+}
+
+const { entry } = Astro.props;
+const { title, description, pubDate, tags } = entry.data;
+---
+
+<a class="post-row" href={entryPath(entry)}>
+  <time class="post-row__date" datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+  <div>
+    <h3 class="post-row__title">{title}</h3>
+    <p class="post-row__excerpt">{description}</p>
+    {
+      tags.length > 0 && (
+        <div class="tag-row">
+          {tags.map((tag) => (
+            <TagChip tag={tag} />
+          ))}
+        </div>
+      )
+    }
+  </div>
+</a>
+
+<style>
+  .post-row {
+    display: grid;
+    grid-template-columns: 92px 1fr;
+    gap: 22px;
+    align-items: start;
+    padding: 22px 14px 22px 6px;
+    border-bottom: 1px solid var(--rule-row);
+    color: var(--text);
+  }
+
+  /* The 8px left nudge on hover — padding-left goes 6px → 14px. */
+  .post-row:hover {
+    background: rgba(0, 229, 255, 0.05);
+    padding-left: 14px;
+    color: var(--text);
+  }
+
+  .post-row__date {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--meta-dim);
+    padding-top: 5px;
+  }
+
+  .post-row__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 23px;
+    line-height: 1.2;
+    margin: 0 0 7px;
+  }
+
+  .post-row__excerpt {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--muted-2);
+    margin: 0 0 11px;
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 680px) {
+    .post-row {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .post-row__date {
+      padding-top: 0;
+    }
+
+    .post-row__title {
+      font-size: 21px;
+    }
+  }
+</style>

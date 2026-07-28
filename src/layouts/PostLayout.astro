@@ -1,0 +1,333 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import GlitchText from '../components/GlitchText.astro';
+import TagChip from '../components/TagChip.astro';
+import { SITE, LINKS } from '../consts';
+import { entryPath, formatDate, type WritingEntry } from '../lib/content';
+import '../styles/prose.css';
+
+interface Props {
+  entry: WritingEntry;
+  readTime: string;
+  /** The next older entry, if there is one. */
+  next?: WritingEntry;
+}
+
+const { entry, readTime, next } = Astro.props;
+const { title, description, pubDate, updatedDate, tags } = entry.data;
+
+const data = entry.data as Record<string, unknown>;
+const recipe = entry.collection === 'recipes' ? entry.data : null;
+const difficulty = entry.collection === 'guides' ? (data.difficulty as string | undefined) : undefined;
+
+/** Where "← index" goes back to. Recipes and guides live under /blog too. */
+const indexHref = '/blog';
+
+const jsonLd: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': recipe ? 'Recipe' : 'BlogPosting',
+  headline: title,
+  name: title,
+  description,
+  datePublished: pubDate.toISOString(),
+  ...(updatedDate ? { dateModified: updatedDate.toISOString() } : {}),
+  author: { '@type': 'Person', name: SITE.author, url: SITE.url },
+  keywords: tags.join(', '),
+  mainEntityOfPage: new URL(`${entryPath(entry)}/`, SITE.url).toString(),
+};
+
+if (recipe) {
+  // The structured recipe fields make this basically free, and it earns rich results.
+  if (recipe.ingredients) jsonLd.recipeIngredient = recipe.ingredients;
+  if (recipe.servings) jsonLd.recipeYield = `${recipe.servings} servings`;
+  if (recipe.prepMinutes) jsonLd.totalTime = `PT${recipe.prepMinutes}M`;
+  if (recipe.carbsPerServing) {
+    jsonLd.nutrition = {
+      '@type': 'NutritionInformation',
+      carbohydrateContent: `${recipe.carbsPerServing} g`,
+      servingSize: '1 slice',
+    };
+  }
+}
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  image={`/og/${entry.id}.png`}
+  jsonLd={jsonLd}
+>
+  <main id="main" class="container">
+    <div class="crumb">
+      <a class="crumb__link" href={indexHref}>← index</a>
+    </div>
+
+    <article class="article">
+      <header class="article__head">
+        {
+          tags.length > 0 && (
+            <div class="tag-row article__tags">
+              {tags.map((tag) => (
+                <TagChip tag={tag} link />
+              ))}
+            </div>
+          )
+        }
+
+        <GlitchText as="h1" ms={380} steps={3} class="article__title">{title}</GlitchText>
+
+        <div class="article__meta">
+          <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+          <span class="article__sep" aria-hidden="true">/</span>
+          <span>{readTime}</span>
+          <span class="article__sep" aria-hidden="true">/</span>
+          <span>{SITE.author}</span>
+          {
+            updatedDate && (
+              <>
+                <span class="article__sep" aria-hidden="true">
+                  /
+                </span>
+                <span>updated {formatDate(updatedDate)}</span>
+              </>
+            )
+          }
+        </div>
+      </header>
+
+      {
+        recipe && (
+          <div class="facts">
+            {recipe.servings && (
+              <div class="facts__item">
+                <span class="facts__label">Servings</span>
+                <span class="facts__value">{recipe.servings}</span>
+              </div>
+            )}
+            {recipe.prepMinutes && (
+              <div class="facts__item">
+                <span class="facts__label">Time</span>
+                <span class="facts__value">{recipe.prepMinutes} min</span>
+              </div>
+            )}
+            {recipe.carbsPerServing && (
+              <div class="facts__item">
+                <span class="facts__label">Carbs / serving</span>
+                <span class="facts__value">{recipe.carbsPerServing} g</span>
+              </div>
+            )}
+          </div>
+        )
+      }
+
+      {
+        recipe?.ingredients && (
+          <div class="ingredients">
+            <h2 class="ingredients__head">// ingredients</h2>
+            <ul class="ingredients__list">
+              {recipe.ingredients.map((line) => (
+                <li>{line}</li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+
+      {
+        difficulty && (
+          <div class="facts">
+            <div class="facts__item">
+              <span class="facts__label">Difficulty</span>
+              <span class="facts__value">{difficulty}</span>
+            </div>
+          </div>
+        )
+      }
+
+      <div class="prose">
+        <slot />
+      </div>
+
+      <footer class="article__foot">
+        <div class="article__foot-note">
+          Ride data on <a href={LINKS.strava} target="_blank" rel="me noopener noreferrer">Strava</a>
+        </div>
+        {
+          next ? (
+            <a class="next" href={entryPath(next)}>
+              Next post →
+            </a>
+          ) : (
+            <a class="next" href={indexHref}>
+              All posts →
+            </a>
+          )
+        }
+      </footer>
+    </article>
+  </main>
+</BaseLayout>
+
+<style>
+  .crumb {
+    padding: 56px 0 0;
+  }
+
+  .crumb__link {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--meta);
+  }
+
+  .crumb__link:hover {
+    color: var(--magenta);
+  }
+
+  .article {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .article__head {
+    padding: 44px 0 38px;
+    border-bottom: 1px solid var(--rule-section);
+    margin-bottom: 44px;
+  }
+
+  .article__tags {
+    margin-bottom: 20px;
+  }
+
+  /* GlitchText owns the <h1>; scope the ancestor, globalise the descendant. */
+  .article :global(.article__title) {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 52px;
+    line-height: 1.03;
+    letter-spacing: -0.015em;
+    margin: 0 0 22px;
+    text-wrap: balance;
+  }
+
+  .article__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    color: var(--meta);
+  }
+
+  .article__sep {
+    color: var(--rule-dim);
+  }
+
+  /* Recipe / guide frontmatter block, rendered above the body. */
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 44px;
+    padding: 0 0 30px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid var(--rule-section);
+  }
+
+  .facts__item {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .facts__label {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--label-2);
+  }
+
+  .facts__value {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 1;
+    color: var(--text);
+  }
+
+  .ingredients {
+    margin-bottom: 38px;
+  }
+
+  .ingredients__head {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin: 0 0 16px;
+  }
+
+  .ingredients__list {
+    margin: 0;
+    padding-left: 22px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--body);
+  }
+
+  .ingredients__list li {
+    margin-bottom: 8px;
+  }
+
+  .article__foot {
+    margin-top: 56px;
+    padding-top: 30px;
+    border-top: 1px solid var(--rule-section);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .article__foot-note {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    color: var(--meta);
+  }
+
+  .next {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    border: 1px solid rgba(0, 229, 255, 0.4);
+    padding: 11px 16px;
+    white-space: nowrap;
+  }
+
+  .next:hover {
+    background: var(--cyan);
+    color: var(--bg);
+  }
+
+  @media (max-width: 680px) {
+    .article :global(.article__title) {
+      font-size: 34px;
+    }
+
+    .article__meta {
+      gap: 12px;
+    }
+
+    .article__foot {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 18px;
+    }
+  }
+</style>

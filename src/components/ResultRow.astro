@@ -1,0 +1,56 @@
+---
+interface Props {
+  place: string;
+  race: string;
+  meta: string;
+}
+
+const { place, race, meta } = Astro.props;
+---
+
+<div class="result">
+  <div class="result__place">{place}</div>
+  <div class="result__body">
+    <div class="result__race">{race}</div>
+    <div class="result__meta">{meta}</div>
+  </div>
+</div>
+
+<style>
+  .result {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 13px 4px;
+    border-bottom: 1px solid var(--rule-row-tight);
+  }
+
+  .result:hover {
+    background: rgba(255, 43, 209, 0.06);
+  }
+
+  .result__place {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 17px;
+    color: var(--green);
+    min-width: 34px;
+  }
+
+  .result__body {
+    flex: 1;
+  }
+
+  .result__race {
+    font-size: 14.5px;
+    color: var(--body-dim);
+  }
+
+  .result__meta {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    color: var(--meta-dim);
+    margin-top: 3px;
+  }
+</style>
