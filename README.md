@@ -115,7 +115,28 @@ render OG cards at build time.
 Vercel, zero-config — it detects Astro and serves `dist/`. No adapter: the site is
 fully static, and `@astrojs/vercel` would only add serverless plumbing nothing uses.
 
-Add `fager.tech` and `www.fager.tech` in Vercel and redirect `www` to the apex.
+`vercel.json` pins the few things that are not defaults:
+
+- `trailingSlash: true`, so served URLs match the `<link rel="canonical">` tags and
+  the RSS links. Change one and you must change all three.
+- Immutable caching for `/_astro/*`, which is content-hashed and can never go stale.
+- Short revalidating cache for `/og/*`, which is **not** hashed — an OG card keeps
+  its filename when a post title changes, so it must not be cached immutably.
+- Baseline security headers.
+
+### First-time setup
+
+1. Import the repo in Vercel. Framework preset: Astro. Node 22. Build command and
+   output directory are detected; leave them alone.
+2. Add the four `STRAVA_*` variables from `.env.example` to Project → Settings →
+   Environment Variables. The build succeeds without them — `prebuild` warns and
+   uses the committed `telemetry.json` — so this can wait.
+3. Add `fager.tech` and `www.fager.tech` under Project → Settings → Domains, and set
+   `www` to redirect to the apex.
+4. Create a deploy hook (Settings → Git → Deploy Hooks) and store the URL as the
+   `VERCEL_DEPLOY_HOOK_URL` repository secret, so the daily telemetry refresh in
+   `.github/workflows/refresh-telemetry.yml` has something to call. It no-ops
+   without one.
 
 ## Deliberate non-goals
 
