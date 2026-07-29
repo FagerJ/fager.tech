@@ -17,7 +17,7 @@ npm run preview  # serve dist/
 npm run check    # astro check (types + template diagnostics)
 ```
 
-Node 22.
+Node 22 or newer (`engines` in `package.json`). Vercel currently builds on 24.x.
 
 ## How it is put together
 
@@ -157,8 +157,8 @@ Two things key off the repository's **default branch** specifically, so it must 
 
 ### First-time setup
 
-1. Import the repo in Vercel. Framework preset: Astro. Node 22. Build command and
-   output directory are detected; leave them alone.
+1. Import the repo in Vercel. Framework preset: Astro. Build command, output
+   directory and Node version are all detected; leave them alone.
 2. Add `INTERVALS_ATHLETE_ID` and `INTERVALS_API_KEY` from `.env.example` to
    Project → Settings → Environment Variables. The build succeeds without them —
    `prebuild` warns and uses the committed `telemetry.json` — so this can wait.
