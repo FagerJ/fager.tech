@@ -32,7 +32,7 @@ src/
 ├─ pages/          routes
 ├─ styles/         global.css (tokens, reset, keyframes) + prose.css (article body)
 └─ assets/fonts/   vendored woff2 + ttf
-scripts/sync-strava.mjs   build-time telemetry fetch
+scripts/sync-intervals.mjs   build-time telemetry fetch
 ```
 
 **Zero client-side JavaScript.** Every interaction in the design is a hover state
@@ -73,24 +73,42 @@ Set `draft: true` to hide a post from production while keeping it visible in `de
 Tags are authored with display casing (`eCycling`, `3D printing`) and slugified only
 for URLs, so `/tags/ecycling` and `/tags/3d-printing`.
 
-## Telemetry / Strava
+## Telemetry / intervals.icu
 
-`scripts/sync-strava.mjs` runs as `prebuild`, refreshes the OAuth token, reads the
-athlete's year-to-date ride totals and writes `src/data/telemetry.json`. It never
-runs in the browser — the refresh token must not reach the client, and the numbers
-are baked into the HTML.
+`scripts/sync-intervals.mjs` runs as `prebuild`, sums the year's rides and writes
+`src/data/telemetry.json`. It never runs in the browser — the API key must not
+reach the client, and the numbers are baked into the HTML.
 
-Copy `.env.example` to `.env` locally and set the same four variables in the Vercel
-project settings. FTP is not exposed by the Strava API; it is maintained by hand in
-`src/data/manual.json`.
+intervals.icu is the single source for all four cards **including FTP**, which the
+Strava API never exposed. That is why the source changed: Strava needed a manual
+FTP value maintained by hand, and a token-refresh dance on every build.
 
-The script is deliberately fail-soft: missing credentials, a revoked token or a
-Strava outage log a warning and exit 0, leaving the committed `telemetry.json` in
-place. **A Strava problem must never fail a deploy.** `telemetry.json` is committed
-for exactly this reason — do not gitignore it.
+Copy `.env.example` to `.env` and set the same two variables in Vercel. Auth is
+HTTP Basic with the literal username `API_KEY` and your key as the password.
 
-Strava rotates refresh tokens. When it does, the script logs the new one; copy it
-into the Vercel environment variable.
+The script is deliberately fail-soft: a missing key, a revoked key or an outage
+log a warning and exit 0, leaving the committed `telemetry.json` in place. **A
+telemetry problem must never fail a deploy.** `telemetry.json` is committed for
+exactly this reason — do not gitignore it. A failure to read FTP alone is caught
+separately, so the other three cards still publish.
+
+### Confirming the API shape
+
+`sync-intervals.mjs` resolves each number through `pick()`, which takes the first
+candidate field that is actually numeric, because intervals.icu mostly — but not
+exactly — mirrors Strava's field names. Run the probe once after setting your key:
+
+```bash
+INTERVALS_PROBE=1 node scripts/sync-intervals.mjs
+```
+
+It prints the keys the API really returned, reports which candidate won for each
+number, and writes nothing. If a line says `NONE of ... matched`, add the real
+field name to the candidate list in that `pick()` call. Do this before trusting
+the first deployed numbers.
+
+`src/data/manual.json` is now only a fallback for FTP; if intervals.icu returns a
+value it wins.
 
 `.github/workflows/refresh-telemetry.yml` pokes a Vercel deploy hook daily so the
 numbers stay current without a content change. It needs a `VERCEL_DEPLOY_HOOK_URL`
@@ -141,9 +159,9 @@ Two things key off the repository's **default branch** specifically, so it must 
 
 1. Import the repo in Vercel. Framework preset: Astro. Node 22. Build command and
    output directory are detected; leave them alone.
-2. Add the four `STRAVA_*` variables from `.env.example` to Project → Settings →
-   Environment Variables. The build succeeds without them — `prebuild` warns and
-   uses the committed `telemetry.json` — so this can wait.
+2. Add `INTERVALS_ATHLETE_ID` and `INTERVALS_API_KEY` from `.env.example` to
+   Project → Settings → Environment Variables. The build succeeds without them —
+   `prebuild` warns and uses the committed `telemetry.json` — so this can wait.
 3. Add `fager.tech` and `www.fager.tech` under Project → Settings → Domains, and set
    `www` to redirect to the apex.
 4. Create a deploy hook (Settings → Git → Deploy Hooks) and store the URL as the

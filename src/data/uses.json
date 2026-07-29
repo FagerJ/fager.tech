@@ -6,6 +6,6 @@
   { "slot": "Indoor", "item": "Zwift + MyWhoosh" },
   { "slot": "Printer", "item": "Bambu Lab P1S + AMS" },
   { "slot": "Editor", "item": "VS Code + Neovim" },
-  { "slot": "Stack", "item": "Astro · Vercel · Cloudflare DNS" },
+  { "slot": "Stack", "item": "Astro · Vercel · Simply DNS" },
   { "slot": "Analysis", "item": "Intervals.icu" }
 ]

@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "prebuild": "node scripts/sync-strava.mjs",
+    "prebuild": "node scripts/sync-intervals.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
