@@ -124,6 +124,19 @@ fully static, and `@astrojs/vercel` would only add serverless plumbing nothing u
   its filename when a post title changes, so it must not be cached immutably.
 - Baseline security headers.
 
+### Branches and deploys
+
+`main` is the trunk. Vercel's Git integration builds it on every push and promotes
+the result to production — there is no manual deploy step and no CLI in the loop.
+Any other branch, and any PR, gets its own preview URL.
+
+Two things key off the repository's **default branch** specifically, so it must be
+`main`:
+
+- Vercel's Production Branch setting inherits from it.
+- Scheduled GitHub Actions only run on the default branch, which is what drives
+  `refresh-telemetry.yml`.
+
 ### First-time setup
 
 1. Import the repo in Vercel. Framework preset: Astro. Node 22. Build command and
